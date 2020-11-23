@@ -6,9 +6,6 @@ import CVNNLayer
 # from sklearn.utils import shuffle
 
 
-
-
-
 def Block_1D(inpt, features, filters):
     conv1 = CVNNLayer.conv1d(
         inpt,
