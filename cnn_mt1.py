@@ -225,21 +225,3 @@ pre_y = pre_y/mts
 
 # np.save("net-snr-1.npy", snr)
 np.save("cvnn_doa.npy", pre_y)
-
-
-'''
-plt.figure()
-
-plt.plot(snr, mmse / mts)
-
-# my_x_ticks = np.arange(-90, 90, 15)
-# my_y_ticks = np.arange(10*lamda, 90 * lamda, 10)
-
-# plt.xticks(my_x_ticks)
-# plt.yticks(y_ticks, (y_ticks / lamda).astype(np.int))
-plt.xlabel('snapshots')
-plt.ylabel('MMSE')
-# plt.title('MUSIC')
-
-plt.show()
-'''
