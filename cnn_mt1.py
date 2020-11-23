@@ -32,8 +32,6 @@ n_d = n_d - [33]  # N rows
 
 sim_num = len(Theta)
 mts = 10
-# mmse = np.zeros([mts])
-# pre_X = np.zeros([sim_num, 65, 1], dtype=complex)
 
 data_length = 33
 
@@ -54,8 +52,6 @@ def net(pre_x):
 
         meta_graph_def = tf.saved_model.loader.load(
             sess, ['test_saved_model'], "./saveModel_32/")
-        # meta_graph_def = tf.saved_model.loader.load(
-        #     sess, ['test_saved_model'], "E:/Documents/Python/cys_8/plot-1d-new/saveModel/")
 
         # 从meta_graph_def中取出SignatureDef对象
         signature = meta_graph_def.signature_def
@@ -100,10 +96,7 @@ def GenArray(source_theta, d0):
 
     d_r = d0 * np.sqrt(1 + (n_d * d / d0)**2 -
                        (2 * n_d * d * np.sin(source_theta) / d0))
-    # print(d_r)
     a_r = np.exp(-2j * np.pi * (d_r - d0) / lamda) * d0 / d_r  # Nx1
-    # a_r = np.array(a_r).reshape(N, 1)
-    # print(a_r.shape)
 
     return a_r
 
@@ -228,7 +221,6 @@ for mt in range(0, mts):
 
 
 # mmse = mmse / mts
-# Theta = Theta * drad
 pre_y = pre_y/mts
 
 # np.save("net-snr-1.npy", snr)
