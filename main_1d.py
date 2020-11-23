@@ -3,7 +3,6 @@ import numpy as np
 import tensorflow as tf
 # from utils import *
 import CVNNUtils
-# import layersHDA
 from sklearn.utils import shuffle
 import matplotlib.pyplot as plt
 #import os
@@ -31,17 +30,12 @@ test_y = np.load("data/test_doa.npy").reshape([NUM_VAL, L])
 
 
 # 必须事先转化为特殊数据类型
-# train_x = layersHDA.typeClone(train_x, 'Complex')
-# MAE lr = 2e-4
 alpha = 5e-4
 lam = 0  #1e-8
 
 # Set up graph for training
-# x = tf.placeholder(tf.complex64, (None, 2080))
 x = tf.placeholder(tf.complex64, (None, load_len, 1))
 y = tf.placeholder(tf.float32, (None, L))
-# keep_prob = tf.placeholder(tf.float32)
-# Y1 = tf.placeholder(tf.float32, (None, 1), name="Y1")
 
 # Select computational graph based on network input
 fc0 = CVNNUtils.TASKs(x, out_nums=L, networkType='Complex')
@@ -52,40 +46,14 @@ params = tf.trainable_variables()
 reg_loss = tf.add_n([tf.nn.l2_loss(v) for v in params])
 
 Joint_Loss = rad * tf.losses.absolute_difference(y, Y1_layer) + lam * reg_loss
-#Joint_Loss = tf.reduce_mean(tf.square(rad * (Y1_layer - y))) + lam * reg_loss
 
 
-'''
-y_target = tf.reshape(tf.concat([tf.cos(y), tf.sin(y)], 1), [-1, 1, 2])
-Y1_layer = tf.reshape(Y1_layer, [-1, 2, 1])
-Cos_dis = 1 - tf.matmul(y_target, Y1_layer)
-Joint_Loss = tf.reduce_sum(Cos_dis) # + lam * reg_loss
-'''
-# T_y = tf.tan(y)
-# loss_operation = tf.reduce_sum(tf.square(tf.tanh(logits) - tf.tanh(T_y))) + lam * reg_loss
-'''
-steps = int(NUM_TRAIN/BATCH_SIZE)
-global_step = tf.Variable(0, trainable=False)
-boundaries = [20, 100, 200]
-learing_rates = [5e-5, 2e-5, 1e-5, 5e-6]
-
-lr = tf.train.piecewise_constant(global_step, boundaries=boundaries, values=learing_rates)
-optimizer = tf.train.AdamOptimizer(learning_rate=lr)
-'''
-# optimizer = tf.train.RMSPropOptimizer(learning_rate=alpha)
 optimizer = tf.train.AdamOptimizer(learning_rate=alpha)
-# optimizer = tf.train.GradientDescentOptimizer(learning_rate=alpha)
-
-# Y1_op = tf.train.RMSPropOptimizer(learning_rate=alpha).minimize(Y1_Loss)
-# Y2_op = tf.train.RMSPropOptimizer(learning_rate=alpha).minimize(Y2_Loss)
-
-# training_operation = optimizer.minimize(Joint_Loss, global_step=global_step)
 training_operation = optimizer.minimize(Joint_Loss)
 
 saver = tf.train.Saver()
 
 training_loss = np.zeros(int(np.ceil(EPOCHS * len(train_x) / BATCH_SIZE)))
-# training_loss = np.zeros(int(np.ceil(EPOCHS * train_x.shape.as_list()[0] / BATCH_SIZE)))
 test_loss = np.zeros(EPOCHS)
 
 train_loss_count = 0
@@ -109,14 +77,7 @@ with tf.Session() as sess:
 
         for offset in range(0, num_examples, BATCH_SIZE):
             end = offset + BATCH_SIZE
-
             batch_x, batch_y = X_train[offset:end], y_train[offset:end]
-            '''
-            batch_x_t = np.transpose(batch_x0, [0, 2, 1]).conj()
-            batch_x = np.matmul(batch_x0, batch_x_t)
-            batch_x = np.reshape(batch_x, ([BATCH_SIZE, 65, 65, 1]))
-            '''
-
             sess.run(
                 training_operation,
                 feed_dict={
@@ -148,8 +109,6 @@ with tf.Session() as sess:
         val_loss.append(test_loss[i])
 
         print("EPOCH {} ...".format(i + 1))
-        # print('Learning rate: %f' % (sess.run(lr, feed_dict={global_step: i})))
-        # print('Learning rate: %f' % (sess.run(optimizer._lr)))
 
         print("Training loss = {:.3f}".format(
             training_loss[train_loss_count - 1]))
